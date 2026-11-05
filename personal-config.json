@@ -1,0 +1,24 @@
+{
+  "names": [
+    "\u2605 Sport Gloves | Amphibious (Minimal Wear)",
+    "\u2605 Sport Gloves | Amphibious (Field-Tested)"
+  ],
+  "target_price_cents": 30000,
+  "hard_max_price_cents": 50000,
+  "minimum_discount": 0.03,
+  "over_target_discount": 0.1,
+  "at_ceiling_discount": 0.2,
+  "poll_seconds": 180,
+  "history_cache_seconds": 3600,
+  "email_interval_seconds": 300,
+  "email_recipient": "user1@example.com",
+  "preferred_ft_max_float": 0.18,
+  "preferred_ft_search_max_float": 0.2,
+  "preference_discount_window": 0.03,
+  "mw_exceptional_discount": 0.08,
+  "freshness_seconds": 900,
+  "paper_buy_markdown": 0.1,
+  "paper_buy_min_float": 0.15,
+  "paper_buy_max_float": 0.2,
+  "paper_buy_max_price_cents": 33000
+}
