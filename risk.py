@@ -1,4 +1,3 @@
-pass                                                                             
 import datetime as dt
 import math
 import statistics
@@ -14,7 +13,7 @@ def assess(sales, now, fair, price, c, parse_time, clean_prices):
             days.setdefault(age, []).append(sale['price'])
     medians = {age: statistics.median(clean_prices(values)) for age, values in days.items()
                if len(values) >= c['min_sales_per_trend_day']}
-                                                                               
+
     start = [v for age, v in medians.items() if 6 <= age <= 8]
     end = [v for age, v in medians.items() if 0 <= age <= 1]
     if not start or not end or len([a for a in medians if a <= 7]) < c['min_trend_days']:
@@ -22,7 +21,7 @@ def assess(sales, now, fair, price, c, parse_time, clean_prices):
     baseline, current = statistics.median(start), statistics.median(end)
     weekly_change = current/baseline-1
     decline = max(0, -weekly_change)
-                                                                              
+
     recent_peak = max(v for a,v in medians.items() if a <= 7)
     drawdown = max(0, 1-current/recent_peak)
     return stress(weekly_change,drawdown,fair,price,c,len(medians),'matched_sales')
@@ -55,7 +54,6 @@ def stress(weekly_change, drawdown, fair, price, c, trend_days, source):
 
 
 def chart_trend(chart, now, c, parse_time):
-    pass                                                                           
     reject=lambda why: {'risk_ok':False,'risk_reason':why,'trend_source':'daily_average_chart'}
     if not isinstance(chart,list):
         return reject('chart response is not a list')
@@ -77,7 +75,7 @@ def chart_trend(chart, now, c, parse_time):
             return reject('duplicate chart day')
         points[age]=(avg,count)
     usable={age:avg for age,(avg,count) in points.items() if count>=c['min_sales_per_trend_day']}
-                                                                                    
+
     if 1 not in usable or 8 not in usable or sum(a<=7 for a in usable)<c['min_trend_days']:
         return reject('insufficient chart coverage: need yesterday, seven days earlier, and enough populated days')
     current,baseline=usable[1],usable[8]

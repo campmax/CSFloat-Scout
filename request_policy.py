@@ -1,4 +1,3 @@
-pass                                                                   
 import datetime as dt
 from email.utils import parsedate_to_datetime
 import json
@@ -42,7 +41,7 @@ class Policy:
         else:
             self.state['interval']=max(interval,self.state['interval'])
             self.state['history_interval']=max(history_interval,self.state['history_interval'])
-                                                                             
+
         self.save()
 
     def history_due(self):
@@ -80,7 +79,6 @@ class Policy:
             time.sleep(min(1,self.state['next_allowed']-time.time()))
 
     def await_cooldown(self,stop):
-        pass                                                                       
         announced=False
         next_notice=0
         while self.blocked():

@@ -1,9 +1,5 @@
-pass                                                                         
 
-                                                                            
-                                                                            
-                                                                              
-   
+
 import math
 import statistics as st
 
@@ -26,8 +22,8 @@ def local(points, value):
         return None
     if any(b-a > .025 for a,b in zip(xs,xs[1:])):
         return None
-                                                                              
-                                                                                
+
+
     slopes = [(b[1]-a[1])/(b[0]-a[0]) for i,a in enumerate(near)
               for b in near[i+1:] if abs(b[0]-a[0]) >= .002]
     if not slopes:
@@ -79,7 +75,7 @@ class FloatModel:
     def adjust(self, row):
         if self.error is None:
             return None, self.info['reason']
-                                                                    
+
         points = [p for p in self.points if p[3] != str(row['id'])]
         source = local(points, row['item']['float_value'])
         target = local(points, self.target)
@@ -92,9 +88,8 @@ class FloatModel:
         ratio = math.exp(target[0]-source[0])
         if not .5 <= ratio <= 2:
             return None, 'adjustment exceeds supported ratio limit'
-                                                                            
-                                                                                
-                                                                              
+
+
         ratios=[]
         for day in sorted(source[2] | target[2]):
             subset=[p for p in points if p[2]!=day]

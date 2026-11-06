@@ -1,4 +1,3 @@
-pass                                                                         
 import math
 import time
 
@@ -21,7 +20,7 @@ def rank(data,p,now=None):
         old=latest.get(r['id'])
         if not old or (r['last_seen']>old['last_seen'] or (r['last_seen']==old['last_seen'] and r['price_cents']<old['price_cents'])):latest[r['id']]=r
     data=list(latest.values())
-                                                                                     
+
     for r in data:
         r['dominated_by']=[s['id'] for s in data if s['id']!=r['id'] and s['name']==r['name'] and
             s['total_cost_cents']<=r['total_cost_cents'] and s['float']<=r['float'] and

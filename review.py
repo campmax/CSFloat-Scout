@@ -1,4 +1,3 @@
-pass                                                                      
 import math
 import statistics
 import time

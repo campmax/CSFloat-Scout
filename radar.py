@@ -1,6 +1,5 @@
-pass                                                                            
-                                                                                        
-   
+
+
 import argparse
 import html
 import json
@@ -45,7 +44,7 @@ def config(path):
         if type(c[k]) not in (int,float) or not math.isfinite(c[k]) or not 0<c[k]<1:raise ValueError('Invalid '+k)
     if type(c['request_interval_seconds']) not in (int,float) or not math.isfinite(c['request_interval_seconds']) or c['request_interval_seconds']<15:raise ValueError('Request spacing must be at least 15 seconds')
     if c['requests_per_cycle']<2:raise ValueError('At least two listing requests per cycle required')
-                                                                                
+
     c['emails_per_cycle']=min(c['emails_per_cycle'],2)
     return c
 
@@ -74,8 +73,8 @@ def lead(row,c):
     if not row.get('id') or not item.get('market_hash_name') or not cents(price) or not c['min_price_cents']<=price<=c['max_price_cents']:return None
     ref=row.get('reference') or item.get('reference') or {}
     discounts={k:1-price/ref[k] for k in ('base_price','predicted_price') if cents(ref.get(k))}
-                                                                                          
-                                                                            
+
+
     quantity=ref.get('quantity')
     source=min(discounts,key=discounts.get) if discounts else None;score=discounts[source] if source else -1
     return dict(id=str(row['id']),name=item['market_hash_name'],price_cents=price,discount=score,
@@ -112,7 +111,7 @@ def market(r):return json.dumps([r['name'],r['item'].get('paint_index')])
 def evidence(db,r,c,now):
     key=market(r)
     row=db.execute('SELECT fetched,payload FROM radar_history WHERE market=?',(key,)).fetchone()
-                                                                                         
+
     if (not row or now-row[0]>c['history_cache_seconds']) and Path('scout.sqlite3').exists():
         main=None
         try:
@@ -168,7 +167,7 @@ def classify(r,c,now):
     e=r['support']
     if e.get('negative_reason'):return None,e['negative_reason']
     if e.get('weekly_above_break_even',0):return 'supported',None
-                                                                             
+
     if e.get('market_recent_sales',0):return 'longshot',None
     if r['older']:return None,'Older listing without recent market support'
     if r['name'].startswith('Souvenir ') or r['item'].get('is_souvenir'):
@@ -219,7 +218,7 @@ def alerts(db,c,now=None,send=True):
         if reason:
             r['withheld_reason']=reason;withheld.append(r);continue
         eligible.append(r)
-                                                                                      
+
     eligible.sort(key=lambda r:(not r['older'],r.get('alert_tier')=='supported',r['discount'],r['support']['above_break_even']),reverse=True)
     for r in eligible:
         if not send or c.get('minute_updates',True):break
@@ -239,7 +238,7 @@ def alerts(db,c,now=None,send=True):
         prev=db.execute('SELECT attempts,last FROM radar_mail WHERE id=? AND price=?',(r['id'],r['price_cents'])).fetchone()
         if prev and (prev[0]>=3 or now-prev[1]<300):continue
         if not c['email_enabled']:continue
-                                                                                   
+
         if time.time()-r['observed_at']>c['observation_max_age_seconds']:continue
         attempts=prev[0]+1 if prev else 1
         db.execute('INSERT OR REPLACE INTO radar_mail VALUES (?,?,?,?,?)',(r['id'],r['price_cents'],'attempting',attempts,now))
@@ -272,7 +271,7 @@ def cycle(api,db,c):
                 total+=len(found);new+=ingest(db,found,c,time.time())
             except QuotaDeferred:break
         leads,sent,threshold=alerts(db,c)
-                                                                              
+
         if c['history_enabled'] and api.policy.history_due():
             for r in sorted(leads,key=lambda r:(not r['older'],r['discount']),reverse=True):
                 if r.get('withheld_reason'):continue
@@ -285,7 +284,7 @@ def cycle(api,db,c):
                 except AccessStop:raise
                 except Stop as error:print('History unavailable: '+str(error),flush=True)
                 break
-                                                                                           
+
         db.execute("INSERT OR REPLACE INTO radar_state VALUES ('cycle',?)",(turn+1,))
         db.execute('DELETE FROM radar_items WHERE seen<?',(time.time()-86400,))
         supported=sum(r['support'].get('weekly_above_break_even',0)>=1 for r in leads)

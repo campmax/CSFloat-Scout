@@ -28,7 +28,7 @@ class HistoryPacingTests(unittest.TestCase):
     def test_history_shared_slot_and_restart_do_not_burst(self):
         with patch('request_policy.time.time',return_value=1000),patch('scout.time.sleep'):
             api=self.api();api.sales('Name',1)
-            self.assertEqual(api.opener.open.call_count,1)                                                
+            self.assertEqual(api.opener.open.call_count,1)
             api.policy.state['next_allowed']=0
             with self.assertRaises(HistoryDeferred):api.graph('Other',2)
             second=API('SECRET',15,'request-state.json');second.opener=Mock()

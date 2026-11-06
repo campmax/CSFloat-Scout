@@ -1,5 +1,4 @@
 import os
-pass                                                                          
 import json
 import sqlite3
 import threading

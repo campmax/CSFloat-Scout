@@ -1,4 +1,3 @@
-pass                                                                                  
 from pathlib import Path
 import ast,json,os,shutil
 OLD=os.environ.get('SCOUT_OLD_EMAIL','old-recipient@example.com')
@@ -9,7 +8,7 @@ def main():
     if (root/'scout.lock').exists():
         print('Stop every scanner with Ctrl+C before running this update.')
     changes=[]
-                                                                                                 
+
     for p in sorted(root.iterdir()):
         if not p.is_file() or p.name==Path(__file__).name:continue
         if not (p.suffix=='.py' or p.name in ('config.json','personal-config.json','radar-config.json')):continue

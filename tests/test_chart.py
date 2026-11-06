@@ -42,7 +42,7 @@ class ChartTests(unittest.TestCase):
             self.assertEqual(call.call_count,2)
     def test_chart_cannot_inflate_fair_value(self):
         f=json.loads((ROOT/'demo.json').read_text())
-                                                                                  
+
         self.chart=[dict(x,avg_price=999999) for x in self.chart]
         f['now']=self.now
         f['candidate']['created_at']='2026-10-16T06:30:00Z'

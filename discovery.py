@@ -1,4 +1,3 @@
-pass                                                                               
 import json
 import time
 from pathlib import Path
@@ -39,13 +38,13 @@ def discover(api,db,c,live,counts,newest_only=False,secondary_only=False,head_on
         return payload,page
 
     if not secondary_only:
-                                                                                
+
         scope=json.dumps([target,c['min_price_cents'],c['max_price_cents'],mode])
         key='fresh_backlog:'+scope
         db.execute('CREATE TABLE IF NOT EXISTS newest_seen (scope TEXT,id TEXT,price INTEGER,PRIMARY KEY(scope,id,price))')
         pending=load(db,key,[])
-                                                                               
-                                                                                 
+
+
         now=time.time();retired=[];active=[]
         for task in pending:
             task.setdefault('started',now)
@@ -76,7 +75,7 @@ def discover(api,db,c,live,counts,newest_only=False,secondary_only=False,head_on
                 counts['newest:repeated_cursor']+=1;counts['coverage_gap']+=1;return None
             return dict(cursor=cursor,visited=(task['visited']+[cursor])[-128:],started=task.get('started',time.time()))
 
-                                                                                 
+
         head=page_step(dict(cursor=None,visited=[]));used=1
         if head and not any(t['cursor']==head['cursor'] for t in pending):pending.insert(0,head)
         save(db,key,pending)
@@ -91,9 +90,7 @@ def discover(api,db,c,live,counts,newest_only=False,secondary_only=False,head_on
             save(db,key,pending)
             return continuation
 
-                                                                                
-                                                                               
-                                                                                    
+
         while pending and used<budget:
             advance(pending[0]);used+=1
             counts['newest:resumed_pages']+=1
@@ -109,8 +106,8 @@ def discover(api,db,c,live,counts,newest_only=False,secondary_only=False,head_on
             counts['secondary:deferred_for_research']+=1
             counts['discovery_strategy']='newest first; budgeted research; side feeds deferred; partial coverage'
             return
-                                                                                   
-                                                                                   
+
+
         for label,seconds in [('deals',c['deals_interval_seconds']),('focus',c['focus_interval_seconds'])]:
             state_key='timed_feed:'+json.dumps([label,targets,c['focus_watchlist'],base,mode],sort_keys=True)
             state=load(db,state_key,dict(last=0,index=0))

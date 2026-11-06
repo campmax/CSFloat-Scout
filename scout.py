@@ -1,4 +1,3 @@
-pass                                                                         
 import argparse
 import datetime as dt
 import json
@@ -12,8 +11,8 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
-                                                                       
-                                                                                
+
+
 if __name__ == '__main__':
     sys.modules['scout'] = sys.modules[__name__]
 from risk import assess, assess_chart, chart_trend
@@ -37,7 +36,6 @@ class RequestBudgetStop(Stop):
     pass
 
 class QuotaDeferred(Stop):
-    pass                                                            
     pass
 
 class HistoryDeferred(Stop):
@@ -83,7 +81,7 @@ class API:
         def diagnostics(headers):
             result={}
             if headers is None:return result
-                                                                                 
+
             for key in ('X-RateLimit-Limit','X-RateLimit-Remaining','X-RateLimit-Reset'):
                 value=headers.get(key)
                 if isinstance(value,str) and value.isdigit():result[key.lower()]=int(value)
@@ -144,7 +142,7 @@ class API:
         observer=getattr(self,'detail_observer',None)
         if observer:
             try:observer(str(listing_id),detail)
-            except sqlite3.Error:pass                                                  
+            except sqlite3.Error:pass
         return detail
 
     def sales(self, name, paint):
@@ -175,8 +173,8 @@ class API:
 
 
 def parse_balance(payload):
-                                                                             
-                                                              
+
+
     user = payload.get('user') if isinstance(payload, dict) else None
     value = user.get('balance') if isinstance(user, dict) else None
     if type(value) is not int or value < 0:
@@ -226,18 +224,17 @@ def comparable(a, b, tolerance):
     for key in ('market_hash_name', 'def_index', 'paint_index'):
         if x.get(key) is None or x.get(key) != y.get(key):
             return False
-                                                                    
+
     fx, fy = x.get('float_value'), y.get('float_value')
     if not all(type(f) in (int, float) and math.isfinite(f) and 0 <= f <= 1 for f in (fx, fy)):
         return False
     if abs(fx - fy) > tolerance:
         return False
-                                                                  
+
     return not y.get('stickers') and not y.get('keychains')
 
 
 def clean_prices(values):
-    pass                                                            
     logs = [math.log(v) for v in values]
     if not logs:
         return []
@@ -272,7 +269,7 @@ def evaluate(candidate, asks, sales, config, now=None, chart=None):
         return reject('listing timestamp missing, future, or too old')
     tolerance = config['float_tolerance']
     seller = candidate.get('seller', {}).get('steam_id')
-                                                                            
+
     by_seller = {}
     for ask in asks:
         sid = ask.get('seller', {}).get('steam_id')
@@ -283,7 +280,7 @@ def evaluate(candidate, asks, sales, config, now=None, chart=None):
     ask_prices = list(by_seller.values())
     if len(ask_prices) < config['min_independent_sellers']:
         return reject('insufficient comparable independent sellers')
-                                                                                    
+
     ask_cap = min(ask_prices)
     valid_sales, seen = [], set()
     for sale in sales:
@@ -400,12 +397,12 @@ def purchase(api, ledger, listing, config, record=None):
     if Path('STOP').exists():
         raise Stop('STOP file present.')
     ledger.reserve(listing, config)
-                                                                            
+
     response = api.buy(listing['id'], listing['price'])
     if not isinstance(response, dict) or response.get('message') != 'all listings purchased':
         raise Stop('Ambiguous purchase result. Reservation retained; live execution halted.')
-                                                                        
-                                                                  
+
+
     after = api.available_balance()
     if after > balance-listing['price']:
         raise Stop('Purchase acknowledged but balance debit not reconciled; stopped to prevent overspending.')
@@ -581,7 +578,7 @@ def main():
         if not asks:
             raise Stop('No listings for that exact market name.')
         sales = api.sales(args.probe_name, asks[0].get('item', {}).get('paint_index'))
-                                                                                
+
         def public_fields(row):
             return {k: row[k] for k in ('id','price','state','type','sold_at','created_at','item','reference') if k in row}
         Path('api-probe.json').write_text(json.dumps({'listings':[public_fields(x) for x in asks[:3]], 'sales':[public_fields(x) for x in sales[:3]]}, indent=2), encoding='utf-8')

@@ -1,4 +1,3 @@
-pass                                                                                 
 import json
 import time
 from datetime import datetime,timezone
@@ -49,7 +48,7 @@ def probe(api,db,counts,now=None):
     except (QuotaDeferred,HistoryDeferred,RequestBudgetStop):return
     except (AccessStop,RateLimitStop):raise
     except Stop:
-                                                                   
+
         db.execute("UPDATE prospect_status SET error='Check failed; sale unconfirmed',last_probe=?,next_probe=? WHERE id=?",(now,now+300,lid))
     else:observe_detail(db,lid,fresh,time.time() if fixed_now is None else fixed_now)
     db.execute('INSERT OR REPLACE INTO prospect_probe_clock VALUES(1,?)',(time.time()+60 if fixed_now is None else fixed_now+60,))

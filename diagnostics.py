@@ -1,4 +1,3 @@
-pass                                                                            
 def report(name,asks,sales,chart,config,now):
     from scout import timestamp,comparable,evaluate
     from scanner import profile

@@ -1,9 +1,5 @@
-pass                                                                         
 
-                                                                           
-                                                                                         
-                                                                           
-   
+
 import json
 import math
 from pathlib import Path
@@ -40,7 +36,7 @@ class Quotas:
         b = self.buckets.get(group)
         if not b or b['reset'] <= now:
             return None
-                                                                            
+
         spendable = b['remaining'] - max(1, math.ceil(b['limit'] * .10))
         if spendable <= 0:
             return max(0, b['reset'] + 5 - now)
@@ -50,7 +46,7 @@ class Quotas:
     def start(self, group, now):
         b = self.buckets.get(group)
         if b:
-                                                                              
+
             b['remaining'] = max(0, b['remaining'] - 1)
             interval = self.interval(group, now)
             b['next'] = now + (interval if interval is not None else
@@ -67,8 +63,8 @@ class Quotas:
             return False
         old = self.buckets.get(group)
         if old and old['reset'] > now:
-                                                                            
-                                                                               
+
+
             remaining = min(remaining, old['remaining'])
             reset = max(reset, old['reset'])
             limit = max(limit, old['limit'])
