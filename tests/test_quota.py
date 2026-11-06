@@ -80,7 +80,7 @@ class QuotaTests(unittest.TestCase):
                 api=API('test',15,'request-state.json');api.policy.configure_routes(15,900)
                 response=io.StringIO('[]')
                 response.headers={k.title():str(v) for k,v in headers().items()}
-                # API uses the conventional spelling of these header names.
+                                                                           
                 response.headers={k.replace('Ratelimit','RateLimit'):v for k,v in response.headers.items()}
                 api.opener=Mock();api.opener.open.return_value=response
                 with patch('request_policy.time.time',return_value=1000),patch('scout.time.sleep'):

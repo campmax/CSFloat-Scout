@@ -1,4 +1,4 @@
-"""Fair paper research scheduling; preserves scan_items and purchase ledgers."""
+pass                                                                            
 import json
 import time
 
@@ -19,7 +19,7 @@ def tag(db,lid,price,mode,feed):
 
 def observe(db,listing,result,now=None):
     now=time.time() if now is None else now
-    # Only actual matching-sales evidence changes health; sold items/API errors don't.
+                                                                                      
     if 'sales_count' not in result:return
     key=market_key(listing)
     previous=db.execute('SELECT failures,last_id,cooldown_until FROM research_health WHERE market=?',(key,)).fetchone()
@@ -41,7 +41,7 @@ def select(db,c,mode,counts,now=None,readiness=None):
     for lid,price,raw,added,score in rows:
         listing=json.loads(raw);key=market_key(listing)
         feeds={x[0] for x in db.execute('SELECT feed FROM candidate_feeds WHERE id=? AND price=? AND mode=?',(lid,price,mode))}
-        # Preserve older v4 queues without pretending we know their original source.
+                                                                                    
         if (listing.get('item') or {}).get('market_hash_name') in c['focus_watchlist']:feed='focus'
         elif 'newest' in feeds:feed='newest'
         else:feed='deals'
@@ -53,21 +53,21 @@ def select(db,c,mode,counts,now=None,readiness=None):
         health=db.execute('SELECT failures,last_id,cooldown_until FROM research_health WHERE market=?',(key,)).fetchone()
         if health and health[2]>now:
             counts['queue:cooldown']+=1;continue
-        # FIFO within a feed prevents enormous reference discounts monopolizing it.
+                                                                                   
         from scout import timestamp
         posted=timestamp(listing.get('created_at'))
-        # Pagination discovers old pages later. Discovery time would incorrectly
-        # rank those older listings ahead of the actual newest listings.
+                                                                                
+                                                                        
         freshness=posted if feed=='newest' and 0<posted<=now else added
         buckets[feed].append((freshness,lid,price,raw,key))
     rotation_row=db.execute("SELECT payload FROM discovery_state WHERE target='research_rotation'").fetchone()
     aging_turn=(int(json.loads(rotation_row[0])) if rotation_row else 0)%4==3
-    # Fresh-first on three turns; oldest-first on every fourth turn. Feed rotation
-    # and one exact market per batch remain, without letting huge API discounts win.
+                                                                                  
+                                                                                    
     def evidence_priority(candidate):
         key=candidate[4]
         cached=db.execute('SELECT fetched,payload FROM evidence_cache WHERE key=?',('sales:'+key,)).fetchone()
-        if not cached or now-cached[0]>1800:return 1  # explore unknown markets
+        if not cached or now-cached[0]>1800:return 1                           
         listing=json.loads(candidate[3])
         value=(listing.get('item') or {}).get('float_value')
         if type(value) in (int,float):
@@ -86,8 +86,8 @@ def select(db,c,mode,counts,now=None,readiness=None):
         week,recent=db.execute('SELECT COUNT(*),COALESCE(SUM(sold>=?),0) FROM observed_sales WHERE market=? AND sold>=? AND sold<=?',
                                (now-3*86400,key,now-7*86400,now)).fetchone()
         return 2 if week>=4 and recent>=2 else 0
-    # Observed liquidity improves priority, never qualifies a deal. The fourth
-    # turn still explores older candidates; unseen markets are not excluded.
+                                                                              
+                                                                            
     for bucket in buckets.values():
         bucket.sort(key=(lambda x:(x[0],x[1])) if aging_turn else
                     (lambda x:(evidence_priority(x),x[0],x[1])),reverse=not aging_turn)

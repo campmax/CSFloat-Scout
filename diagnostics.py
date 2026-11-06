@@ -1,4 +1,4 @@
-"""Read-only diagnostics using the same paper evidence functions as scanning."""
+pass                                                                            
 def report(name,asks,sales,chart,config,now):
     from scout import timestamp,comparable,evaluate
     from scanner import profile

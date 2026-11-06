@@ -1,4 +1,4 @@
-"""Diverse bounded discovery and fresh report selection. No extra API outside cycle."""
+pass                                                                                   
 import json
 
 def queries(db,c,turn,now):
@@ -10,7 +10,7 @@ def queries(db,c,turn,now):
     else:
         lo,hi=bands[(turn-1)%6];lo=max(lo,c['min_price_cents']);hi=min(hi,c['max_price_cents'])
         if lo<=hi:yield dict(common,sort_by='best_deal',min_price=lo-1,max_price=hi+1)
-    # This is recent activity in our cached sample, not a global most-sold chart.
+                                                                                 
     active=[]
     for key,fetched,payload in db.execute('SELECT market,fetched,payload FROM radar_history'):
         if not 0<=now-fetched<=c['history_cache_seconds']:continue
@@ -25,7 +25,7 @@ def queries(db,c,turn,now):
 def select_picks(db,c,now,previous_ids):
     from radar import evidence,support
     db.execute('CREATE TABLE IF NOT EXISTS radar_reported (id TEXT PRIMARY KEY,price INTEGER,sent REAL)')
-    # Seed durable dedup from the v1.3 last report when upgrading.
+                                                                  
     for item_id in previous_ids:
         row=db.execute('SELECT price FROM radar_items WHERE id=?',(item_id,)).fetchone()
         if row:db.execute('INSERT OR IGNORE INTO radar_reported VALUES (?,?,?)',(item_id,row[0],now))
@@ -44,7 +44,7 @@ def select_picks(db,c,now,previous_ids):
         r.update(support=e,observation_age_seconds=max(0,int(now-seen)),repeated=False)
         candidates.append(r)
     candidates.sort(key=lambda r:(r['discount'],r['support'].get('market_recent_sales',0)),reverse=True)
-    # One per exact market name keeps multiple floats of one skin from dominating.
+                                                                                  
     picks=[];names=set()
     for r in candidates:
         if r['name'] in names:continue

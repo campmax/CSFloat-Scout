@@ -1,9 +1,9 @@
-"""Conservative pacing from observed response quotas, never invented refills.
+pass                                                                         
 
-History sales and charts share one local budget until their independence is
-established. Other endpoint types retain their own observed budgets. Headerless responses
-consume a local unit too. These headers cannot describe every server limit.
-"""
+                                                                           
+                                                                                         
+                                                                           
+   
 import json
 import math
 from pathlib import Path
@@ -40,7 +40,7 @@ class Quotas:
         b = self.buckets.get(group)
         if not b or b['reset'] <= now:
             return None
-        # Leave 10% of advertised capacity unused, plus 15% timing headroom.
+                                                                            
         spendable = b['remaining'] - max(1, math.ceil(b['limit'] * .10))
         if spendable <= 0:
             return max(0, b['reset'] + 5 - now)
@@ -50,7 +50,7 @@ class Quotas:
     def start(self, group, now):
         b = self.buckets.get(group)
         if b:
-            # A reset allows one probe; it does NOT manufacture a new balance.
+                                                                              
             b['remaining'] = max(0, b['remaining'] - 1)
             interval = self.interval(group, now)
             b['next'] = now + (interval if interval is not None else
@@ -67,8 +67,8 @@ class Quotas:
             return False
         old = self.buckets.get(group)
         if old and old['reset'] > now:
-            # A different route/reset or an apparent refill must not enlarge
-            # a still-active shared budget. Downward corrections apply at once.
+                                                                            
+                                                                               
             remaining = min(remaining, old['remaining'])
             reset = max(reset, old['reset'])
             limit = max(limit, old['limit'])

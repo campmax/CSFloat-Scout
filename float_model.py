@@ -1,9 +1,9 @@
-"""Local robust log-price regression for PAPER review, not purchase approval.
+pass                                                                         
 
-No global linear/logarithmic float curve is assumed. Local slopes may change
-sign. Entire sale dates are held out for error checks; errors are empirical,
-not confidence guarantees. Input is already identity/date/decoration filtered.
-"""
+                                                                            
+                                                                            
+                                                                              
+   
 import math
 import statistics as st
 
@@ -26,8 +26,8 @@ def local(points, value):
         return None
     if any(b-a > .025 for a,b in zip(xs,xs[1:])):
         return None
-    # Theil-Sen local slope resists isolated expensive sales. Median intercept
-    # evaluates the curve at this exact float without a global shape assumption.
+                                                                              
+                                                                                
     slopes = [(b[1]-a[1])/(b[0]-a[0]) for i,a in enumerate(near)
               for b in near[i+1:] if abs(b[0]-a[0]) >= .002]
     if not slopes:
@@ -79,7 +79,7 @@ class FloatModel:
     def adjust(self, row):
         if self.error is None:
             return None, self.info['reason']
-        # A sale must never train its own source or target estimate.
+                                                                    
         points = [p for p in self.points if p[3] != str(row['id'])]
         source = local(points, row['item']['float_value'])
         target = local(points, self.target)
@@ -92,9 +92,9 @@ class FloatModel:
         ratio = math.exp(target[0]-source[0])
         if not .5 <= ratio <= 2:
             return None, 'adjustment exceeds supported ratio limit'
-        # Estimate uncertainty of the RELATIVE float adjustment, rather than
-        # subtracting both endpoints' raw sale-price dispersion from every sale.
-        # Leave whole dates out: common price noise at both floats can cancel.
+                                                                            
+                                                                                
+                                                                              
         ratios=[]
         for day in sorted(source[2] | target[2]):
             subset=[p for p in points if p[2]!=day]

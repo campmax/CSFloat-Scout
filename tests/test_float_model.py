@@ -19,14 +19,14 @@ class FloatModelTests(unittest.TestCase):
     def test_nonlinear_relative_prices_and_independent_adjustment(self):
         rows=sample();model=FloatModel(rows,.20,timestamp)
         self.assertEqual(model.info['status'],'available')
-        row=rows[12] # .28, outside original tolerance
+        row=rows[12]                                  
         result,reason=model.adjust(row)
         self.assertIsNone(reason)
         expected=math.exp((-3*.20+4*.20**2)-(-3*.28+4*.28**2))
         self.assertAlmostEqual(result['ratio'],expected,delta=.015)
         self.assertLessEqual(abs(result['adjusted_price_cents']-row['price']*result['ratio']),1)
         self.assertLess(result['uncertainty_price_cents'],result['adjusted_price_cents'])
-        # Changing the held-out sale cannot change either fitted estimate.
+                                                                          
         changed=dict(row,price=row['price']*3)
         altered,_=model.adjust(changed)
         self.assertEqual(result['ratio'],altered['ratio'])

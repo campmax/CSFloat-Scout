@@ -1,4 +1,4 @@
-"""Exercise the actual script entry point, not just imported scout classes."""
+pass                                                                          
 import json
 import os
 from pathlib import Path

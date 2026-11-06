@@ -84,7 +84,7 @@ class OptimizationTests(unittest.TestCase):
                 ledger.db.close()
             finally:os.chdir(cwd)
     def test_six_candidates_do_not_force_six_requests(self):
-        # A budget stop mid-candidate must keep it queued, never mark rejected.
+                                                                               
         c=scanner.defaults(json.loads((ROOT/'config.json').read_text()));item=json.loads((ROOT/'demo.json').read_text())['candidate']
         now=timestamp('2026-10-16T06:36:00Z');item['created_at']='2026-10-16T06:30:00Z'
         cwd=os.getcwd()

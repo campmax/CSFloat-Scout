@@ -72,7 +72,7 @@ class FreshTests(unittest.TestCase):
         ledger=Mock();ledger.db=self.db
         calls=[]
         def discovery(*args,**kwargs):calls.append('newest' if kwargs.get('newest_only') else 'secondary')
-        # Keep filesystem writes out of this isolated ordering test.
+                                                                    
         import os,tempfile
         cwd=os.getcwd()
         with tempfile.TemporaryDirectory() as tmp:
@@ -118,7 +118,7 @@ class FreshTests(unittest.TestCase):
         def side(now):
             with patch('discovery.time.time',return_value=now):
                 discover(self.api,self.db,self.c,False,collections.Counter(),secondary_only=True)
-        side(1000);side(1301)  # new, then unchanged
+        side(1000);side(1301)                       
         self.api.reset_mock();side(1602)
         self.api.listings.assert_not_called()
         page=self.page(0,n=1);page['data'][0]['price']-=1;self.api.listings.return_value=page

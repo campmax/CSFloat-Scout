@@ -1,4 +1,4 @@
-"""Personal-item observation sessions with explicit one-pair --live mode."""
+pass                                                                        
 import argparse
 import datetime as dt
 import html
@@ -52,7 +52,7 @@ def assess(r,sales,c,p,now):
     discount=1-cost/fair if fair else None
     name=r['item']['market_hash_name'];f=r['item']['float_value']
     low,high=(.07,.15) if name.endswith('(Minimal Wear)') else (.15,.38)
-    # A maximum 0.1 percentage point bonus: deal quality dominates float preference.
+                                                                                    
     float_bonus=.1*(high-f)/(high-low)
     threshold=p['minimum_discount']
     if cost>p['target_price_cents']:
@@ -122,7 +122,7 @@ def email_summary(db,state,p,enabled,final=False):
     changed=fingerprint!=state.get('email_fingerprint')
     interval=60 if changed else p['email_interval_seconds']
     if time.time()-state['last_email']<interval and not final:return
-    # Persist attempt before SMTP; no rapid repeated sends after interruption.
+                                                                              
     state['last_email']=time.time();save(db,state)
     lines=[('LIVE monitor — check personal-live.json and separate order emails for purchase status.' if p.get('_live') else 'PAPER ONLY — no purchase made.'),'Session ends '+stamp(state['end']),
            'Best observed offers; may already be sold/repriced. Dollar savings compare personal purchase cost with recent sales, not resale profit.']
@@ -168,7 +168,7 @@ def cycle(api,ledger,state,c,p):
                     record(db,state,observed)
         groups={}
         for r in seen.values():groups[(r['item']['market_hash_name'],r['item']['paint_index'])]=r
-        # Alternate MW/FT history priority; one group must not starve the other.
+                                                                                
         keys=list(groups);keys=keys[state['cycles']%max(1,len(keys)):]+keys[:state['cycles']%max(1,len(keys))]
         evidence={}
         for name,paint in keys:
@@ -176,7 +176,7 @@ def cycle(api,ledger,state,c,p):
             except (HistoryDeferred,QuotaDeferred,RequestBudgetStop):evidence[(name,paint)]=None
         for r in seen.values():
             sales=evidence.get((r['item']['market_hash_name'],r['item']['paint_index']))
-            if sales is None:continue  # Preserve prior evidence instead of replacing it with zero sales.
+            if sales is None:continue                                                                    
             result=assess(r,sales,c,p,time.time())
             key='sales:'+json.dumps([r['item']['market_hash_name'],r['item']['paint_index']])
             source=db.execute('SELECT fetched FROM evidence_cache WHERE key=?',(key,)).fetchone()

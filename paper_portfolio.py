@@ -1,5 +1,5 @@
 import os
-"""Prospective simulation only. This module has no API or real-order capability."""
+pass                                                                               
 import copy
 import datetime as dt
 import html
@@ -29,7 +29,7 @@ def settings(c):
 
 
 def direct_tolerance(item):
-    """Local tolerances narrow near wear boundaries and ultra-low FN floats."""
+    pass                                                                       
     f=item['float_value'];name=item.get('market_hash_name','')
     bands=[('Factory New',0,.07,.003),('Minimal Wear',.07,.15,.008),
            ('Field-Tested',.15,.38,.015),('Well-Worn',.38,.45,.01),('Battle-Scarred',.45,1,.02)]
@@ -41,7 +41,7 @@ def direct_tolerance(item):
 
 
 def assess(candidate, asks, sales, c, now=None):
-    """Independent purchase-quality screen; never changes broad alert eligibility."""
+    pass                                                                             
     from review import collect_sales,match_reason
     from scout import timestamp,cents
     from float_model import FloatModel
@@ -63,7 +63,7 @@ def assess(candidate, asks, sales, c, now=None):
         reasons.append('Decoration/pattern premium requires manual review')
     if len(direct)<p['min_direct_sales'] or len(direct_recent)<p['min_direct_recent'] or len(kept)<p['min_total_sales']:
         reasons.append('Thin local liquidity: experimental watch only')
-    # Use the same independent local model for asks; never fit a curve to asking prices.
+                                                                                        
     clean=[];seen=set()
     for s in sales:
         if not isinstance(s,dict):continue
@@ -87,7 +87,7 @@ def assess(candidate, asks, sales, c, now=None):
         ask_values.append(value);ask_audit.append(dict(id=a.get('id'),raw_price_cents=a['price'],equivalent_price_cents=value,method=kind))
     patient=math.floor(min(statistics.median([s['price'] for s in kept]),statistics.median([s['price'] for s in recent or kept])))
     conservative=math.floor(min(statistics.median([s.get('uncertainty_price_cents',s['price']) for s in kept]),statistics.median([s.get('uncertainty_price_cents',s['price']) for s in recent or kept])))
-    # Undercut one cent; ask availability isn't a promise of executable resale.
+                                                                               
     competitive=min(conservative,min(ask_values)-1) if ask_values else conservative
     if not ask_values:reasons.append('No supported competing ask: competitive exit unverified')
     cost=math.ceil(candidate['price']*(1+c['buy_fee_rate']))+c['extra_cost_cents']
@@ -161,7 +161,7 @@ def consider(db,record,c,confirmed_at,now=None):
 
 
 def record_sale(db,c,lid,price,now=None):
-    """Explicit manual simulation assumption, not inferred from disappearance."""
+    pass                                                                         
     now=time.time() if now is None else now;init(db,c)
     if type(price) is not int or price<=0:raise ValueError('Sale cents must be a positive integer')
     db.execute('BEGIN IMMEDIATE')
@@ -206,7 +206,7 @@ def tick(db,c,now=None):
     now=time.time() if now is None else now
     if not settings(c)['enabled']:return
     init(db,c);settle(db,now);flush_mail(db,c,now)
-    # Mark from shared cached completed sales without adding any API requests.
+                                                                              
     tables={r[0] for r in db.execute("SELECT name FROM sqlite_master WHERE type='table'")}
     positions=[]
     for lid,opened,cost,unlock,status,proceeds,settlement,raw in db.execute('SELECT * FROM paper_positions ORDER BY opened DESC'):

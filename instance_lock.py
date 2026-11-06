@@ -1,4 +1,4 @@
-"""One requesting process per scout folder; OS releases lock after a crash."""
+pass                                                                          
 import os
 
 

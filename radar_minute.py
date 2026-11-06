@@ -1,5 +1,5 @@
 import os
-"""Minute reports are independent of API polling and candidate eligibility."""
+pass                                                                          
 import json
 import sqlite3
 import threading

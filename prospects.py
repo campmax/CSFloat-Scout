@@ -1,5 +1,5 @@
 import os
-"""Cached prospect reporting: no market requests and no purchase capability."""
+pass                                                                           
 import datetime as dt
 import json
 import math
@@ -18,7 +18,7 @@ def number(v):return type(v) in (int,float) and math.isfinite(v)
 def stamp(t):return dt.datetime.fromtimestamp(t,dt.timezone.utc).isoformat()
 def collect(db,c,now=None):
     now=time.time() if now is None else now
-    # Latest snapshot per listing, with a bounded recent window. No network reads.
+                                                                                  
     rows=db.execute('''SELECT s.id,s.price,s.seen,s.payload FROM listing_snapshots s
         JOIN (SELECT id,MAX(seen) seen FROM listing_snapshots WHERE seen>=? GROUP BY id) latest
         ON latest.id=s.id AND latest.seen=s.seen WHERE s.seen>=?
@@ -53,7 +53,7 @@ def collect(db,c,now=None):
             evidence_time=evidence.get('time'),history=evidence.get('history_source'),
             research='Researched' if evidence else 'Awaiting research',reason=reason or 'Reference only; value, sales and availability unverified',
             warnings=evidence.get('warnings',[]),url='https://csfloat.com/item/'+lid)
-        # Equal timestamps can exist across versions: prefer lower price, one card per ID.
+                                                                                          
         if lid not in picks or price<picks[lid]['price_cents']:picks[lid]=p
     ranked=sorted(picks.values(),key=lambda p:(p['markdown'],-p['age_seconds']),reverse=True)
     from prospect_status import enrich

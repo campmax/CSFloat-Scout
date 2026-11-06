@@ -1,4 +1,4 @@
-"""SMTP alerts. Configuration through environment; encrypted transport only."""
+pass                                                                           
 from email.message import EmailMessage
 import os
 import json
@@ -100,7 +100,7 @@ def _notify_one(db, record, c, recipient):
         send(f"CSFloat {record.get('tier','paper')}: {record['discount']:.0%} off — {record['name']}",text,recipient)
     except Exception as error:
         db.execute("UPDATE emails SET status='failed' WHERE id=?",(key,))
-        # Do not log exception bodies: mail providers may include account details.
+                                                                                  
         print(f'Email failed ({type(error).__name__}); console alert remains available. Retry only on a fresh eligible evaluation.',flush=True)
     else:
         db.execute("UPDATE emails SET status='sent' WHERE id=?",(key,))
@@ -111,7 +111,7 @@ def init_receipts(db):
 
 
 def queue_purchase(db, record, c):
-    # Caller inserts this in the same transaction as confirming the purchase.
+                                                                             
     for recipient in recipients(c):
         db.execute('INSERT OR IGNORE INTO purchase_emails VALUES (?,?,?,?,0,0)',
                    (record['id'],recipient,json.dumps(record),'pending'))
@@ -126,9 +126,9 @@ def flush_purchases(db, c):
     for listing_id,recipient,payload in pending:
         if recipient not in recipients(c):
             db.execute("UPDATE purchase_emails SET status='cancelled' WHERE id=? AND recipient=?",(listing_id,recipient))
-            continue  # Recipient removed: suppress previously queued receipts too.
-        # Claim each recipient durably. A crashed SMTP send may be retried later,
-        # since delivery cannot be proven after a network timeout.
+            continue                                                               
+                                                                                 
+                                                                  
         result = db.execute("UPDATE purchase_emails SET last_attempt=?,attempts=attempts+1,status='sending' WHERE id=? AND recipient=? AND status!='sent' AND last_attempt<=?",
                             (now,listing_id,recipient,now-c['email_retry_seconds']))
         if not result.rowcount:

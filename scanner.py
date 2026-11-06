@@ -1,4 +1,4 @@
-"""Staged discovery and bounded evaluation, with durable pagination and metrics."""
+pass                                                                               
 import collections
 import datetime as dt
 import json
@@ -47,7 +47,7 @@ def defaults(c):
 
 
 def paper_runtime_config(c):
-    """Apply the slower paper profile even when upgrading with an older config."""
+    pass                                                                          
     c=dict(c)
     c['request_interval_seconds']=max(15,c['paper_listing_interval_seconds'])
     c['paper_review']=dict(c['paper_review'])
@@ -139,7 +139,7 @@ def screen(listing,c,now):
     if not review and any(x.lower() in name.lower() for x in c['exclude_name_contains']):return 'pattern-sensitive finish',0
     if not review and (item.get('stickers') or item.get('keychains')):return 'decorated item',0
     ref=listing.get('reference') or {}
-    # This is a cheap lead filter only. Independent validation still decides value.
+                                                                                   
     reference=max([v for v in (ref.get('predicted_price'),ref.get('base_price')) if cents(v)],default=None) if review else ref.get('predicted_price')
     if not cents(reference):reference=ref.get('base_price')
     if not cents(reference):return (None,0) if review else ('missing reference for cheap prefilter',0)
@@ -184,7 +184,7 @@ def discover(api,db,c,live,counts):
     from scout import rows,timestamp,Stop
     effective,_=profile(c,live)
     targets=c['watchlist'] or [None]
-    # Round-robin targets so a long watchlist does not starve all evaluation work.
+                                                                                  
     row=db.execute("SELECT payload FROM discovery_state WHERE target='__rotation__'").fetchone()
     index=int(json.loads(row[0])) if row else 0
     target=targets[index%len(targets)]
@@ -196,7 +196,7 @@ def discover(api,db,c,live,counts):
     if c['max_price_cents'] is not None:params['max_price']=c['max_price_cents']
     if target:params['market_hash_name']=target
     mode=queue_mode(c,live)
-    # Always revisit the newest page, even while resuming an older backlog.
+                                                                           
     head=api.listings(**params);listings=rows(head)
     counts['discovery_pages']+=1
     ingest(db,listings,effective,mode,counts)
@@ -221,7 +221,7 @@ def discover(api,db,c,live,counts):
                 break
             if not cursor:
                 counts['coverage_unknown_no_cursor']=1
-                # Do not invent a cursor or claim complete coverage.
+                                                                    
                 state.update(cursor=None,watermark=state['anchor'])
                 counts['coverage_gap']=1
                 break
@@ -235,8 +235,8 @@ def discover(api,db,c,live,counts):
         payload=api.listings(**params,cursor=state['cursor'])
         counts['discovery_pages']+=1
         ingest(db,rows(payload),effective,mode,counts)
-        # Persist continuation after each fetched page below. On failures, next cycle
-        # starts at the last committed cursor; duplicate discovery is harmless.
+                                                                                     
+                                                                               
         db.execute('INSERT OR REPLACE INTO discovery_state VALUES (?,?)',(key,json.dumps(state)))
     db.execute('INSERT OR REPLACE INTO discovery_state VALUES (?,?)',(key,json.dumps(state)))
     counts['target']=target or 'all names in price range'
@@ -268,7 +268,7 @@ def evaluate_queue(api,ledger,c,live,counts):
     db=ledger.db
     mode=queue_mode(c,live)
     base,_=profile(c,live)
-    # Expire without any API requests, then prioritize the strongest plausible leads.
+                                                                                     
     for lid,price,raw in db.execute("SELECT id,price,payload FROM scan_items WHERE mode=? AND state='queued'",(mode,)).fetchall():
         listing=json.loads(raw)
         if time.time()-timestamp(listing.get('created_at'))>base['max_listing_age_seconds']:
@@ -318,15 +318,15 @@ def evaluate_queue(api,ledger,c,live,counts):
                 source=db.execute('SELECT fetched FROM evidence_cache WHERE key=?',('sales:'+json.dumps([name,paint]),)).fetchone()
                 if (not source or not 0<=time.time()-source[0]<c['paper_history_cache_seconds']) and not api.policy.history_due():
                     counts['history_deferred']+=1;continue
-            # Details first: don't research a listing already sold while queued.
+                                                                                
             snapshot=db.execute('SELECT seen,payload FROM listing_snapshots WHERE id=? AND price=?',(lid,price)).fetchone()
             if not live and snapshot and 0<=time.time()-snapshot[0]<=c.get('paper_snapshot_seconds',180):
                 fresh=json.loads(snapshot[1]);counts['detail_requests_saved']+=1
             else:
                 try:fresh=api.detail(lid)
                 except QuotaDeferred:
-                    # Listing confirmation must wait, but its independently
-                    # available history slot can populate shared evidence now.
+                                                                           
+                                                                              
                     if not live and api.policy.history_due():
                         before=api.request_count
                         if waiting and not chart_ready:
@@ -343,8 +343,8 @@ def evaluate_queue(api,ledger,c,live,counts):
                 if type(value) not in (int,float) or not math.isfinite(value) or not 0<=value<=1:
                     result={'eligible':False,'reason':'missing valid float'};tier='not_evaluated'
                 else:
-                    # Query the candidate's actual float neighborhood instead of the
-                    # cheapest 50 across all floats. Still match exact metadata locally.
+                                                                                    
+                                                                                        
                     params=dict(limit=50,sort_by='lowest_price',type='buy_now',market_hash_name=name,
                                 min_float=max(0,value-base['float_tolerance']),max_float=min(1,value+base['float_tolerance']))
                     if paint is not None:params['paint_index']=paint
@@ -355,9 +355,9 @@ def evaluate_queue(api,ledger,c,live,counts):
                         judge=evaluate_review
                         effective,tier=profile(c,False)
                         sales=sales_evidence(api,db,name,paint,base['sales_lookback_days'],c['paper_history_cache_seconds'])
-                        # Sales first. Failed evidence/margin checks need no chart
-                        # or competition requests. Final eligible alerts still
-                        # require fresh listing confirmation below.
+                                                                                  
+                                                                              
+                                                                   
                         asks=[];chart=[]
                         result=judge(fresh,asks,sales,effective,chart=chart)
                         plausible=(result.get('estimated_net_cents',0)>0 and
@@ -366,8 +366,8 @@ def evaluate_queue(api,ledger,c,live,counts):
                             chart_key='chart:'+json.dumps([name,paint])
                             chart_row=db.execute('SELECT fetched,payload FROM evidence_cache WHERE key=?',(chart_key,)).fetchone()
                             if c['paper_review'].get('best_available'):
-                                # Missing trend becomes visible uncertainty in manual
-                                # review; do not spend another scarce history call.
+                                                                                     
+                                                                                   
                                 chart=json.loads(chart_row[1]) if chart_row and 0<=time.time()-chart_row[0]<c['paper_history_cache_seconds'] else []
                                 counts['chart_requests_saved']+=1
                             else:chart=cached(db,chart_key,c['paper_history_cache_seconds'],lambda:api.graph(name,paint))
@@ -399,8 +399,8 @@ def evaluate_queue(api,ledger,c,live,counts):
                             else:paper_ask_age=age
                         evidence_checked_at=time.time()
                     if result['eligible']:
-                        # Re-fetch immediately before an alert or buy; every final
-                        # decision uses the refreshed listing and the same evidence.
+                                                                                  
+                                                                                    
                         final=api.detail(lid)
                         confirmed_at=time.monotonic()
                         confirmed_wall=time.time()
@@ -477,8 +477,8 @@ def evaluate_queue(api,ledger,c,live,counts):
             continue
         except (AccessStop,RequestBudgetStop):raise
         except Stop as error:
-            # Keep the candidate queued for a later cycle on transient read failures.
-            # Live purchase uncertainty is already durably blocked in purchase().
+                                                                                     
+                                                                                 
             if live:raise
             from runtime_log import event
             event('candidate_read_error',error,listing_id=lid)

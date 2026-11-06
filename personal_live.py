@@ -1,4 +1,4 @@
-"""One-pair live authorization; durable intent prevents retries after uncertain orders."""
+pass                                                                                      
 import json
 import math
 import time
@@ -51,7 +51,7 @@ def attempt(db, api, rows, c, p, session_end):
     validate_costs(c)
     candidates = sorted((r for r in rows if eligible(r, c)), key=lambda r: markdown(r)[0], reverse=True)
     if not candidates: return
-    # Reserve room for balance, detail, order, and debit reconciliation within existing budget.
+                                                                                               
     if api.budget_end is not None and api.budget_end - api.request_count < 4: return
     observed = candidates[0]
     balance = api.available_balance()
@@ -66,7 +66,7 @@ def attempt(db, api, rows, c, p, session_end):
              reference_markdown=markdown(fresh)[0], created_at=fresh.get('created_at'),
              time=verified_at, status='unknown', url='https://csfloat.com/item/'+str(fresh['id']),
              message='Order intent saved. Outcome unknown; no automatic retry or second purchase.')
-    # This guard runs immediately before the HTTP write, after pacing waits.
+                                                                            
     def before_write():
         if Path('STOP').exists() or time.time() >= session_end:
             raise Stop('STOP/session end reached before purchase; no order submitted.')
@@ -93,7 +93,7 @@ def attempt(db, api, rows, c, p, session_end):
         r.update(status='confirmed', message='CSFloat acknowledged purchase and balance debit was observed. Verify and accept the seller Steam trade manually; delivery is not confirmed.')
         put(db, r)
     except BaseException:
-        # The persisted intent/acknowledgment survives all failures including Ctrl+C.
+                                                                                     
         raise
     finally:
         api.before_write = None

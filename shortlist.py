@@ -1,4 +1,4 @@
-"""Offline, ranked paper-review output. Never authorizes a purchase."""
+pass                                                                   
 import datetime as dt
 import html
 import json
@@ -19,7 +19,7 @@ def remember(db,record):
 
 def export(db):
     init(db)
-    # Import historical decisions once, so the first run is useful immediately.
+                                                                               
     marker='shortlist-import-v48'
     if not db.execute('SELECT 1 FROM discovery_state WHERE target=?',(marker,)).fetchone():
         path=Path('paper-review.jsonl')
@@ -31,7 +31,7 @@ def export(db):
                     if isinstance(r,dict):remember(db,r)
         db.execute('INSERT OR REPLACE INTO discovery_state VALUES (?,?)',(marker,'true'))
     researched=[json.loads(r[0]) for r in db.execute('SELECT payload FROM review_shortlist')]
-    # Positive supported estimates first; incomplete evidence remains visible.
+                                                                              
     researched.sort(key=lambda r:(r.get('estimated_net_cents') is not None,
                      r.get('estimated_net_cents',-10**12),r.get('recent_sales_count',0)),reverse=True)
     researched=researched[:30]

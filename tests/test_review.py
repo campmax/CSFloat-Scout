@@ -125,7 +125,7 @@ class ReviewTests(unittest.TestCase):
         self.assertFalse(self.run_review()['eligible'])
     def test_three_sales_across_dates_with_two_recent_pass_broader_profile(self):
         from scanner import paper_runtime_config
-        self.c['paper_review']['best_available']=False  # legacy profile remains selectable
+        self.c['paper_review']['best_available']=False                                     
         self.c=paper_runtime_config(self.c);self.sales=self.sales[:3]
         self.assertTrue(self.run_review()['eligible'])
         self.sales[1]['sold_at']='2026-10-01T05:00:00Z'

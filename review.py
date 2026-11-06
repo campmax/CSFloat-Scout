@@ -1,4 +1,4 @@
-"""Permissive paper-review evidence. NEVER used to authorize purchases."""
+pass                                                                      
 import math
 import statistics
 import time

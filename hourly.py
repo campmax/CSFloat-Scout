@@ -1,5 +1,5 @@
 import os
-"""Adaptive paper-only shortlist. Ranking never authorizes a purchase."""
+pass                                                                     
 import html
 import json
 from pathlib import Path
@@ -54,8 +54,8 @@ def remember(db,r,c,now=None):
 
 def immediate(db,r,now):
     lid=r['id'];price=r['price_cents']
-    # A lower price is a new opportunity. Equal/higher prices never repeat an
-    # already accepted email, even across process or hourly-window restarts.
+                                                                             
+                                                                            
     if db.execute("SELECT 1 FROM immediate_emails WHERE id=? AND status='sent' AND price<=?",(lid,price)).fetchone():return
     previous=db.execute('SELECT status,attempts,first_attempt,last_attempt FROM immediate_emails WHERE id=? AND price=?',(lid,price)).fetchone()
     if previous and (previous[1]>=3 or now-previous[3]<300 or now-previous[2]>900):return

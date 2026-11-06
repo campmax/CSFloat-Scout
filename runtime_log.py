@@ -1,4 +1,4 @@
-"""Persist lifecycle/error class and code locations, never exception bodies/secrets."""
+pass                                                                                   
 import datetime
 import json
 from pathlib import Path
